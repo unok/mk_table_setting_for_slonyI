@@ -13,6 +13,8 @@ if (!isset($opt['d']) || strlen($opt['d']) == 0) {
 }
 $database = $opt['d'];
 
+$REPLICATION_SCHEMA = '_replication';
+
 
 $db = new PDO("pgsql:dbname=$database host=$host port=$port", $user, $password);
 
@@ -42,6 +44,8 @@ where tc.table_catalog = ? and tc.table_name = ? and
 	tc.table_name=ccu.table_name
 	and
 	tc.constraint_name=ccu.constraint_name
+	and
+	tc.table_schema <> $REPLICATION_SCHEMA
 SQL;
 
 $stmt = $db->prepare($pkey_sql);
@@ -58,7 +62,7 @@ foreach ($table_list as $table) {
 }
 
 $seq_sql =<<<SQL
-select * from information_schema.sequences;
+select * from information_schema.sequences where sequence_schema <> $REPLICATION_SCHEMA;
 SQL;
 
 $sequences = array();
