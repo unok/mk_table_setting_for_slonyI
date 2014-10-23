@@ -19,7 +19,7 @@ $REPLICATION_SCHEMA = '_replication';
 $db = new PDO("pgsql:dbname=$database host=$host port=$port", $user, $password);
 
 $table_list =<<<SQL
-select relname from pg_stat_user_tables
+select relname from pg_stat_user_tables where schemaname <> '$REPLICATION_SCHEMA'
 SQL;
 
 $result = $db->query($table_list);
